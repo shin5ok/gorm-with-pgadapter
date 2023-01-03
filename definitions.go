@@ -2,15 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"os"
 	"time"
 
 	"github.com/shopspring/decimal"
 	"gorm.io/datatypes"
 )
-
-//var connectionString = "host=/tmp port=5433 database=gorm-sample2"
-var connectionString = os.Getenv("CONNECTION_STRING")
 
 type BaseModel struct {
 	ID        string `gorm:"primaryKey;autoIncrement:false"`
