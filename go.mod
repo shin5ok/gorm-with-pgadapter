@@ -3,6 +3,7 @@ module github.com/shin5ok/gorm-with-pgadaptor
 go 1.19
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/shopspring/decimal v1.3.1
 	gorm.io/datatypes v1.1.0
 	gorm.io/driver/postgres v1.4.6
