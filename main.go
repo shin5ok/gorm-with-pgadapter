@@ -55,6 +55,15 @@ func main() {
 				return
 			}
 		}
+	case "listsingers":
+		singers, err := ListSingers(db)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		for n, singer := range singers {
+			fmt.Println(n+1, singer.ID, singer.FullName, singer.Albums, singer.UpdatedAt)
+		}
 	default:
 		help()
 		return
@@ -75,6 +84,16 @@ func CreateSinger(db *gorm.DB, firstName, lastName string) (string, error) {
 	}
 
 	return singer.ID, res.Error
+}
+
+func ListSingers(db *gorm.DB) ([]*Singer, error) {
+	var singers []*Singer
+	res := db.Find(&singers)
+	if res.Error != nil {
+		log.Println(res.Error)
+		return []*Singer{}, res.Error
+	}
+	return singers, nil
 }
 
 func CreateAlbum(db *gorm.DB, singerId, albumTitle string, numTracks int) (string, error) {
