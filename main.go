@@ -15,7 +15,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var connString = os.Getenv("CONNECTION_STRING")
+var connString string = os.Getenv("CONNECTION_STRING")
 
 func main() {
 	mode := flag.String("mode", "", "")
@@ -33,6 +33,7 @@ func main() {
 		DisableNestedTransaction: true,
 		Logger:                   logger.Default.LogMode(logger.Error),
 	})
+
 	if err != nil {
 		fmt.Printf("Failed to open gorm connection: %v\n", err)
 		return
@@ -65,7 +66,7 @@ func main() {
 			fmt.Println(n+1, singer.ID, singer.FullName, singer.Albums, singer.UpdatedAt)
 		}
 	default:
-		help()
+		usage()
 		return
 	}
 }
@@ -127,6 +128,6 @@ func CreateAlbum(db *gorm.DB, singerId, albumTitle string, numTracks int) (strin
 	return albumId, res.Error
 }
 
-func help() {
+func usage() {
 	fmt.Println("Nothing to do")
 }
