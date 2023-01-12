@@ -15,6 +15,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+// like, export CONNECTION_STRING="host=localhost port=15432 database=musics"
 var connString string = os.Getenv("CONNECTION_STRING")
 
 func main() {
@@ -72,8 +73,9 @@ func main() {
 }
 
 func CreateSinger(db *gorm.DB, firstName, lastName string) (string, error) {
+	newUUID, _ := uuid.NewRandom()
 	singer := Singer{
-		BaseModel: BaseModel{ID: uuid.NewString()},
+		BaseModel: BaseModel{ID: newUUID.String()},
 		FirstName: sql.NullString{String: firstName, Valid: true},
 		LastName:  lastName,
 	}
@@ -98,7 +100,8 @@ func ListSingers(db *gorm.DB) ([]*Singer, error) {
 }
 
 func CreateAlbum(db *gorm.DB, singerId, albumTitle string, numTracks int) (string, error) {
-	albumId := uuid.NewString()
+	newUUID, _ := uuid.NewRandom()
+	albumId := newUUID.String()
 	// We cannot include the Tracks that we want to create in the definition here, as gorm would then try to
 	// use an UPSERT to save-or-update the album that we are creating. Instead, we need to create the album first,
 	// and then create the tracks.
