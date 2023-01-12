@@ -72,10 +72,15 @@ func main() {
 	}
 }
 
-func CreateSinger(db *gorm.DB, firstName, lastName string) (string, error) {
+func genId() string {
 	newUUID, _ := uuid.NewRandom()
+	return newUUID.String()
+}
+
+func CreateSinger(db *gorm.DB, firstName, lastName string) (string, error) {
+	randomId := genId()
 	singer := Singer{
-		BaseModel: BaseModel{ID: newUUID.String()},
+		BaseModel: BaseModel{ID: randomId},
 		FirstName: sql.NullString{String: firstName, Valid: true},
 		LastName:  lastName,
 	}
@@ -100,8 +105,7 @@ func ListSingers(db *gorm.DB) ([]*Singer, error) {
 }
 
 func CreateAlbum(db *gorm.DB, singerId, albumTitle string, numTracks int) (string, error) {
-	newUUID, _ := uuid.NewRandom()
-	albumId := newUUID.String()
+	albumId := genId()
 	// We cannot include the Tracks that we want to create in the definition here, as gorm would then try to
 	// use an UPSERT to save-or-update the album that we are creating. Instead, we need to create the album first,
 	// and then create the tracks.
