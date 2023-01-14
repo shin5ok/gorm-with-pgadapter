@@ -13,7 +13,7 @@ start-pgadaptor:
 .PHONY: stop-pgadapter
 stop-pgadaptor:
 	docker stop $(CONTAINER_NAME)
-	docker rm gorm-pgadapter
+	docker rm gorm-pgadaptor
 
 .PHONY: make-schemas
 make-schemas:
