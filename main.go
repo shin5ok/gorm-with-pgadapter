@@ -18,8 +18,8 @@ import (
 
 var appName = "myapp"
 
-var spannerString = os.Getenv("SPANNER_STRING")
-var servicePort = os.Getenv("PORT")
+// like, export CONNECTION_STRING="host=localhost port=15432 database=musics"
+var spannerString string = os.Getenv("CONNECTION_STRING")
 
 type Serving struct {
 	Client GameUserOperation
