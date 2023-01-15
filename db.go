@@ -6,7 +6,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
+	"github.com/google/uuid"
 	"google.golang.org/api/iterator"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type GameUserOperation interface {
@@ -26,17 +30,29 @@ type itemParams struct {
 }
 
 type dbClient struct {
-	sc *spanner.Client
+	sc *gorm.DB
 }
 
-func newClient(ctx context.Context, dbString string) (dbClient, error) {
+func genId() string {
+	newUUID, _ := uuid.NewRandom()
+	return newUUID.String()
+}
 
-	client, err := spanner.NewClient(ctx, dbString)
+func newClient(ctx context.Context, spannerString string) (dbClient, error) {
+
+	db, err := gorm.Open(postgres.Open(spannerString), &gorm.Config{
+		// DisableNestedTransaction will turn off the use of Savepoints if gorm
+		// detects a nested transaction. Cloud Spanner does not support Savepoints,
+		// so it is recommended to set this configuration option to true.
+		DisableNestedTransaction: true,
+		Logger:                   logger.Default.LogMode(logger.Error),
+	})
+
 	if err != nil {
 		return dbClient{}, err
 	}
 	return dbClient{
-		sc: client,
+		sc: db,
 	}, nil
 }
 
