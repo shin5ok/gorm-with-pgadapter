@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httplog"
 	"github.com/go-chi/render"
-	"github.com/google/uuid"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -32,13 +31,18 @@ type User struct {
 
 func main() {
 
+	var servicePort string = os.Getenv("PORT")
+
 	ctx := context.Background()
 
 	client, err := newClient(ctx, spannerString)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.sc.Close()
+	defer func() {
+		db, _ := client.sc.DB()
+		db.Close()
+	}()
 
 	s := Serving{
 		Client: client,
@@ -92,16 +96,16 @@ func (s Serving) getUserItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Serving) createUser(w http.ResponseWriter, r *http.Request) {
-	userId, _ := uuid.NewRandom()
+	// userId, _ := uuid.NewRandom()
 	userName := chi.URLParam(r, "user_name")
 	ctx := r.Context()
-	err := s.Client.createUser(ctx, w, userParams{userID: userId.String(), userName: userName})
+	err := s.Client.createUser(ctx, w, userName)
 	if err != nil {
 		errorRender(w, r, http.StatusInternalServerError, err)
 		return
 	}
 	render.JSON(w, r, User{
-		Id:   userId.String(),
+		// Id:   userId.String(),
 		Name: userName,
 	})
 }
@@ -110,7 +114,7 @@ func (s Serving) addItemToUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "user_id")
 	itemID := chi.URLParam(r, "item_id")
 	ctx := r.Context()
-	err := s.Client.addItemToUser(ctx, w, userParams{userID: userID}, itemParams{itemID: itemID})
+	err := s.Client.addItemToUser(ctx, w, Users{UserId: userID}, itemParams{itemID: itemID})
 	if err != nil {
 		errorRender(w, r, http.StatusInternalServerError, err)
 		return
@@ -120,5 +124,5 @@ func (s Serving) addItemToUser(w http.ResponseWriter, r *http.Request) {
 
 func (s Serving) pingPong(w http.ResponseWriter, r *http.Request) {
 	render.Status(r, http.StatusOK)
-	render.PlainText(w, r, "Pong\n")
+	render.PlainText(w, r, "Pong!\n")
 }
