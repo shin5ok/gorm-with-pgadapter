@@ -96,16 +96,15 @@ func (s Serving) getUserItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Serving) createUser(w http.ResponseWriter, r *http.Request) {
-	// userId, _ := uuid.NewRandom()
 	userName := chi.URLParam(r, "user_name")
 	ctx := r.Context()
-	err := s.Client.createUser(ctx, w, userName)
+	id, err := s.Client.createUser(ctx, w, userName)
 	if err != nil {
 		errorRender(w, r, http.StatusInternalServerError, err)
 		return
 	}
 	render.JSON(w, r, User{
-		// Id:   userId.String(),
+		Id:   id,
 		Name: userName,
 	})
 }
