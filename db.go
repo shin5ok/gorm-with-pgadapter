@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"io"
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,7 +11,7 @@ import (
 )
 
 type GameUserOperation interface {
-	createUser(context.Context, io.Writer, string) error
+	createUser(context.Context, io.Writer, string) (string, error)
 	addItemToUser(context.Context, io.Writer, Users, itemParams) error
 	userItems(context.Context, io.Writer, string) ([]map[string]interface{}, error)
 }
@@ -59,25 +58,22 @@ func newClient(ctx context.Context, spannerString string) (dbClient, error) {
 }
 
 // create a user
-func (d dbClient) createUser(ctx context.Context, w io.Writer, u string) error {
+func (d dbClient) createUser(ctx context.Context, w io.Writer, u string) (string, error) {
 
 	randomId := genId()
-	log.Printf("%+v\n", randomId)
 
 	user := Users{
 		BaseModel: BaseModel{},
 		UserId:    randomId,
 		Name:      u,
 	}
-	log.Printf("%+v\n", user)
 	res := d.sc.Debug().Create(&user)
-	log.Printf("%+v\n", res)
 
 	if res.Error != nil {
-		return res.Error
+		return "", res.Error
 	}
 
-	return nil
+	return randomId, nil
 }
 
 // add item specified item_id to specific user
