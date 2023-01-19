@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"io"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,7 +13,7 @@ import (
 
 type GameUserOperation interface {
 	createUser(context.Context, io.Writer, string) (string, error)
-	addItemToUser(context.Context, io.Writer, Users, itemParams) error
+	addItemToUser(context.Context, io.Writer, Users, ItemParams) error
 	userItems(context.Context, io.Writer, string) ([]map[string]interface{}, error)
 }
 
@@ -23,14 +24,18 @@ type BaseModel struct {
 
 type Users struct {
 	BaseModel
-	UserId string `gorm:"primaryKey;autoIncrement:false"`
+	UserID string `gorm:"primaryKey;autoIncrement:false"`
 	Name   string
 }
 
-type itemParams struct {
+type ItemParams struct {
+	ItemID string `gorm:"primaryKey;autoIncrement:false"`
+}
+
+type userItems struct {
 	BaseModel
-	itemID    string
-	itemPrice int
+	ItemParams
+	UserID string `gorm:"primaryKey;autoIncrement:false"`
 }
 
 type dbClient struct {
@@ -64,7 +69,7 @@ func (d dbClient) createUser(ctx context.Context, w io.Writer, u string) (string
 
 	user := Users{
 		BaseModel: BaseModel{},
-		UserId:    randomId,
+		UserID:    randomId,
 		Name:      u,
 	}
 	res := d.sc.Debug().Create(&user)
@@ -77,7 +82,20 @@ func (d dbClient) createUser(ctx context.Context, w io.Writer, u string) (string
 }
 
 // add item specified item_id to specific user
-func (d dbClient) addItemToUser(ctx context.Context, w io.Writer, u Users, i itemParams) error {
+func (d dbClient) addItemToUser(ctx context.Context, w io.Writer, u Users, i ItemParams) error {
+
+	ui := userItems{
+		BaseModel:  BaseModel{},
+		ItemParams: i,
+		UserID:     u.UserID,
+	}
+	log.Printf("%+v", ui)
+	res := d.sc.Debug().Create(&ui)
+
+	if res.Error != nil {
+		return res.Error
+	}
+
 	return nil
 }
 
