@@ -113,7 +113,7 @@ func (s Serving) addItemToUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "user_id")
 	itemID := chi.URLParam(r, "item_id")
 	ctx := r.Context()
-	err := s.Client.addItemToUser(ctx, w, Users{UserId: userID}, itemParams{itemID: itemID})
+	err := s.Client.addItemToUser(ctx, w, Users{UserID: userID}, ItemParams{ItemID: itemID})
 	if err != nil {
 		errorRender(w, r, http.StatusInternalServerError, err)
 		return
