@@ -12,11 +12,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	// "os"
-	// "path/filepath"
-	// "regexp"
 	"testing"
-	// "time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -43,11 +39,11 @@ func init() {
 	fakeServing = Serving{
 		Client: dbClient{sc: db},
 	}
-	/*
-		schemaFiles, _ := filepath.Glob("schemas/*_ddl.sql")
-		if err := testutil.InitData(ctx, fakeDbString, schemaFiles); err != nil {
-			log.Fatal(err)
-		}
+	/* TODO
+	schemaFiles, _ := filepath.Glob("schemas/*_ddl.sql")
+	if err := testutil.InitData(ctx, fakeDbString, schemaFiles); err != nil {
+		log.Fatal(err)
+	}
 	*/
 }
 
@@ -133,7 +129,7 @@ func Test_getUserItems(t *testing.T) {
 	}
 }
 
-/*
+/* TODO
 func Test_cleaning(t *testing.T) {
 	t.Cleanup(
 		func() {
