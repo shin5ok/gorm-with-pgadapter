@@ -28,10 +28,16 @@ var (
 )
 
 func init() {
+	/*
+		// TODO: setup some schemas just for test that will be destroyed at the end of the test
+		schemaFiles, _ := filepath.Glob("schemas/*_ddl.sql")
+		if err := testutil.InitData(ctx, fakeDbString, schemaFiles); err != nil {
+			log.Fatal(err)
+		}
+	*/
 	db, err := gorm.Open(postgres.Open(spannerString), &gorm.Config{
 		DisableNestedTransaction: true,
 	})
-	_ = db
 
 	if err != nil {
 		log.Fatal(err)
@@ -39,12 +45,6 @@ func init() {
 	fakeServing = Serving{
 		Client: dbClient{sc: db},
 	}
-	/* TODO
-	schemaFiles, _ := filepath.Glob("schemas/*_ddl.sql")
-	if err := testutil.InitData(ctx, fakeDbString, schemaFiles); err != nil {
-		log.Fatal(err)
-	}
-	*/
 }
 
 func Test_run(t *testing.T) {
@@ -129,7 +129,8 @@ func Test_getUserItems(t *testing.T) {
 	}
 }
 
-/* TODO
+/*
+// TODO
 func Test_cleaning(t *testing.T) {
 	t.Cleanup(
 		func() {
@@ -139,4 +140,5 @@ func Test_cleaning(t *testing.T) {
 			}
 		},
 	)
-} */
+}
+*/
