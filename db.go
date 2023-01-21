@@ -29,8 +29,7 @@ type Users struct {
 }
 
 type ItemParams struct {
-	ItemID   string `gorm:"primaryKey;autoIncrement:false"`
-	ItemName string
+	ItemID string `gorm:"primaryKey;autoIncrement:false"`
 }
 
 type UserItems struct {
