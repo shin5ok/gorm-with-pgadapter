@@ -100,7 +100,6 @@ func Test_addItemUser(t *testing.T) {
 	r := &http.Request{}
 	uriPath := fmt.Sprintf("/api/user_id/%s/%s", userTestID, itemTestID)
 	req, err := http.NewRequestWithContext(r.Context(), "PUT", uriPath, nil)
-	t.Log(uriPath)
 	assert.Nil(t, err)
 	newReq := req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
 
