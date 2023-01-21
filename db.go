@@ -14,7 +14,7 @@ import (
 type GameUserOperation interface {
 	createUser(context.Context, io.Writer, string) (string, error)
 	addItemToUser(context.Context, io.Writer, Users, ItemParams) error
-	userItems(context.Context, io.Writer, string) ([]ItemParams, error)
+	getUserItems(context.Context, io.Writer, string) ([]ItemParams, error)
 }
 
 type BaseModel struct {
@@ -33,7 +33,7 @@ type ItemParams struct {
 	ItemName string
 }
 
-type userItems struct {
+type UserItems struct {
 	BaseModel
 	ItemParams
 	UserID string `gorm:"primaryKey;autoIncrement:false"`
@@ -85,7 +85,7 @@ func (d dbClient) createUser(ctx context.Context, w io.Writer, u string) (string
 // add item specified item_id to specific user
 func (d dbClient) addItemToUser(ctx context.Context, w io.Writer, u Users, i ItemParams) error {
 
-	ui := userItems{
+	ui := UserItems{
 		BaseModel:  BaseModel{},
 		ItemParams: i,
 		UserID:     u.UserID,
@@ -101,7 +101,7 @@ func (d dbClient) addItemToUser(ctx context.Context, w io.Writer, u Users, i Ite
 }
 
 // get what items the user has
-func (d dbClient) userItems(ctx context.Context, w io.Writer, userId string) ([]ItemParams, error) {
+func (d dbClient) getUserItems(ctx context.Context, w io.Writer, userId string) ([]ItemParams, error) {
 	/*
 		sql := `select users.name,items.item_name,user_items.item_id
 			from user_items join items on items.item_id = user_items.item_id join users on users.user_id = user_items.user_id
