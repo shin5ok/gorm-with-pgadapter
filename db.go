@@ -38,6 +38,12 @@ type UserItems struct {
 	UserID string `gorm:"primaryKey;autoIncrement:false"`
 }
 
+type Items struct {
+	BaseModel
+	ItemParams
+	ItemName string
+}
+
 type dbClient struct {
 	sc *gorm.DB
 }
@@ -128,4 +134,10 @@ func (d dbClient) getUserItems(ctx context.Context, w io.Writer, userId string) 
 	}
 
 	return resultUserItems, nil
+}
+
+func (d dbClient) ListItems(ctx context.Context, w io.Writer, userId string) ([]Items, error) {
+	items := []Items{}
+	d.sc.Debug().Table("items").Find(&items).Scan(&items)
+	return items, nil
 }
