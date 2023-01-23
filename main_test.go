@@ -25,24 +25,10 @@ var (
 
 	itemTestID = "d169f397-ba3f-413b-bc3c-a465576ef06e"
 	userTestID string
-
-/*
-testDbName = genId()
-*/
 )
 
 func init() {
-	/*
-		// TODO: setup some schemas just for test that will be destroyed at the end of the test
-		schemaFiles, _ := filepath.Glob("schemas/*_ddl.sql")
-		if err := testutil.InitData(ctx, fakeDbString, schemaFiles); err != nil {
-			log.Fatal(err)
-		}
-	*/
 
-	//prepareTestDB(spannerPgString, testDbName)
-
-	//testSpannerPgString := rewriteDBString(spannerPgString, testDbName)
 	testSpannerPgString := spannerPgString
 	db, err := gorm.Open(postgres.Open(testSpannerPgString), &gorm.Config{
 		DisableNestedTransaction: true,
@@ -55,36 +41,6 @@ func init() {
 		Client: dbClient{sc: db},
 	}
 }
-
-/*
-	func prepareTestDB(originString, testDbName string) {
-		prepareSpannerPgString := rewriteDBString(spannerPgString, "game")
-		preDb, err := gorm.Open(postgres.Open(prepareSpannerPgString), &gorm.Config{
-			DisableNestedTransaction: true,
-		})
-		if err != nil {
-			panic(err)
-		}
-		defer func() {
-			db, _ := preDb.DB()
-			db.Close()
-		}()
-		createTestDb(preDb, testDbName)
-	}
-
-	func rewriteDBString(originSpannerPgString string, name string) string {
-		r := regexp.MustCompile(`(.*)\s+database=.*`)
-		results := r.FindAllStringSubmatch(originSpannerPgString, -1)
-		newDbString := fmt.Sprintf("new DB string is '%s database=%s'", results[0][1], name)
-		log.Println("Generating DB just for test", newDbString)
-		return newDbString
-	}
-
-	func createTestDb(db *gorm.DB, name string) {
-		sql := "create database %s " + name
-		db.Exec(sql)
-	}
-*/
 
 func Test_run(t *testing.T) {
 
@@ -160,7 +116,7 @@ func Test_getUserItems(t *testing.T) {
 	newReq := req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(fakeServing.addItemToUser)
+	handler := http.HandlerFunc(fakeServing.getUserItems)
 	handler.ServeHTTP(rr, newReq)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -168,6 +124,8 @@ func Test_getUserItems(t *testing.T) {
 	}
 }
 
+/*
 func Test_cleaning(t *testing.T) {
 	t.Cleanup(func() {})
 }
+*/
