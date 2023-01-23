@@ -15,6 +15,7 @@ type GameUserOperation interface {
 	createUser(context.Context, io.Writer, string) (string, error)
 	addItemToUser(context.Context, io.Writer, Users, ItemParams) error
 	getUserItems(context.Context, io.Writer, string) ([]ItemParams, error)
+	listItems(context.Context, io.Writer, string) ([]Items, error)
 }
 
 type BaseModel struct {
@@ -136,8 +137,15 @@ func (d dbClient) getUserItems(ctx context.Context, w io.Writer, userId string) 
 	return resultUserItems, nil
 }
 
-func (d dbClient) ListItems(ctx context.Context, w io.Writer, userId string) ([]Items, error) {
+func (d dbClient) listItems(ctx context.Context, w io.Writer, userId string) ([]Items, error) {
 	items := []Items{}
 	d.sc.Debug().Table("items").Find(&items).Scan(&items)
 	return items, nil
+}
+
+func (d dbClient) deleteUser(ctx context.Context, userID string) error {
+	deleteUser := Users{UserID: userID}
+	d.sc.Debug().Table("users").Delete(&deleteUser)
+	return nil
+
 }
