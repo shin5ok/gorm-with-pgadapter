@@ -26,7 +26,9 @@ var (
 	itemTestID = "d169f397-ba3f-413b-bc3c-a465576ef06e"
 	userTestID string
 
-	testDatabase = genId()
+/*
+testDbName = genId()
+*/
 )
 
 func init() {
@@ -37,11 +39,14 @@ func init() {
 			log.Fatal(err)
 		}
 	*/
-	db, err := gorm.Open(postgres.Open(spannerPgString), &gorm.Config{
+
+	//prepareTestDB(spannerPgString, testDbName)
+
+	//testSpannerPgString := rewriteDBString(spannerPgString, testDbName)
+	testSpannerPgString := spannerPgString
+	db, err := gorm.Open(postgres.Open(testSpannerPgString), &gorm.Config{
 		DisableNestedTransaction: true,
 	})
-
-	createTestDB(db, testDatabase)
 
 	if err != nil {
 		log.Fatal(err)
@@ -50,6 +55,36 @@ func init() {
 		Client: dbClient{sc: db},
 	}
 }
+
+/*
+	func prepareTestDB(originString, testDbName string) {
+		prepareSpannerPgString := rewriteDBString(spannerPgString, "game")
+		preDb, err := gorm.Open(postgres.Open(prepareSpannerPgString), &gorm.Config{
+			DisableNestedTransaction: true,
+		})
+		if err != nil {
+			panic(err)
+		}
+		defer func() {
+			db, _ := preDb.DB()
+			db.Close()
+		}()
+		createTestDb(preDb, testDbName)
+	}
+
+	func rewriteDBString(originSpannerPgString string, name string) string {
+		r := regexp.MustCompile(`(.*)\s+database=.*`)
+		results := r.FindAllStringSubmatch(originSpannerPgString, -1)
+		newDbString := fmt.Sprintf("new DB string is '%s database=%s'", results[0][1], name)
+		log.Println("Generating DB just for test", newDbString)
+		return newDbString
+	}
+
+	func createTestDb(db *gorm.DB, name string) {
+		sql := "create database %s " + name
+		db.Exec(sql)
+	}
+*/
 
 func Test_run(t *testing.T) {
 
@@ -133,16 +168,6 @@ func Test_getUserItems(t *testing.T) {
 	}
 }
 
-/*
-// TODO
 func Test_cleaning(t *testing.T) {
-	t.Cleanup(
-		func() {
-			ctx := context.Background()
-			if err := testutil.DropData(ctx, fakeDbString); err != nil {
-				t.Error(err)
-			}
-		},
-	)
+	t.Cleanup(func() {})
 }
-*/
