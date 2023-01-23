@@ -25,6 +25,8 @@ var (
 
 	itemTestID = "d169f397-ba3f-413b-bc3c-a465576ef06e"
 	userTestID string
+
+	testDatabase = genId()
 )
 
 func init() {
@@ -35,9 +37,11 @@ func init() {
 			log.Fatal(err)
 		}
 	*/
-	db, err := gorm.Open(postgres.Open(spannerString), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(spannerPgString), &gorm.Config{
 		DisableNestedTransaction: true,
 	})
+
+	createTestDB(db, testDatabase)
 
 	if err != nil {
 		log.Fatal(err)

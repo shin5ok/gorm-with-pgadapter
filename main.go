@@ -18,7 +18,7 @@ import (
 var appName = "myapp"
 
 // like, export CONNECTION_STRING="host=localhost port=15432 database=musics"
-var spannerString string = os.Getenv("CONNECTION_STRING")
+var spannerPgString string = os.Getenv("CONNECTION_STRING")
 
 type Serving struct {
 	Client GameUserOperation
@@ -35,7 +35,7 @@ func main() {
 
 	ctx := context.Background()
 
-	client, err := newClient(ctx, spannerString)
+	client, err := newClient(ctx, spannerPgString)
 	if err != nil {
 		log.Fatal(err)
 	}
